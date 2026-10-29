@@ -1,0 +1,15 @@
+.git
+.idea
+.vscode
+.env
+.env.*
+!.env.example
+target
+.mvn
+mvnw
+mvnw.cmd
+HELP.md
+frontend/node_modules
+frontend/dist
+frontend/*.local
+**/*.iml

@@ -1,0 +1,44 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: webbanvexemphim
+      MYSQL_USER: ticketapp
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Set a non-empty DB_PASSWORD in .env}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:?Set a non-empty DB_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DB_URL: jdbc:mysql://db:3306/webbanvexemphim?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Ho_Chi_Minh
+      DB_USERNAME: ticketapp
+      DB_PASSWORD: ${DB_PASSWORD:?Set a non-empty DB_PASSWORD in .env}
+    depends_on:
+      db:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:

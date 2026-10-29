@@ -1,0 +1,15 @@
+package ticket2;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
+
+@SpringBootApplication
+@EnableScheduling
+public class Ticket2Application {
+
+	public static void main(String[] args) {
+		SpringApplication.run(Ticket2Application.class, args);
+	}
+
+}
