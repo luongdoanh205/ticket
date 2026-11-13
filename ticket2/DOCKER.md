@@ -16,7 +16,7 @@ Compose tự đổi `DB_URL` sang hostname `db` và dùng user ứng dụng `tic
 
 Nếu chưa có `.env`, tạo file này từ `.env.example`. Nếu đã có `.env`, chỉ cập nhật `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` và `JWT_SECRET`, giữ lại các cấu hình khác. Điền mật khẩu TiDB thật và một `JWT_SECRET` riêng; không commit hoặc gửi file `.env`. URL JDBC phải bắt đầu bằng `jdbc:mysql://` (không dùng trực tiếp dạng `mysql://`) và bật TLS. Tài khoản TiDB Cloud Starter/Essential cần TLS; `sslMode=VERIFY_IDENTITY` bật TLS và xác minh chứng chỉ máy chủ.
 
-Ví dụ bạn gửi dùng schema `sys`, nhưng TiDB dành schema đó cho các view thông tin hệ thống. Hãy tạo schema riêng cho app trước khi triển khai (`CREATE DATABASE ticket2;`) và dùng đường dẫn `/ticket2` trong `DB_URL`, như mẫu `.env.example`.
+Ví dụ bạn gửi dùng schema `sys`, nhưng TiDB dành schema đó cho các view thông tin hệ thống. Hãy tạo schema riêng `webbanvexemphim` cho app trước khi triển khai (`CREATE DATABASE webbanvexemphim;`) và dùng đường dẫn `/webbanvexemphim` trong `DB_URL`, như mẫu `.env.example`.
 
 Chạy cấu hình này để dùng TiDB Cloud mà không khởi động MySQL cục bộ:
 
@@ -25,6 +25,8 @@ docker compose -f compose.tidb.yaml up --build -d
 ```
 
 Web và API được phục vụ qua port `8081`. Backend đọc `DB_URL`, `DB_USERNAME`, `DB_PASSWORD` và `JWT_SECRET` từ `.env`; trên nền tảng triển khai khác, đặt các giá trị đó trong phần environment/secrets của dịch vụ backend. Nếu nhà cung cấp database yêu cầu IP allowlist, cho phép IP outbound của backend triển khai.
+
+Frontend dùng `VITE_API_URL` nếu được cấu hình; mặc định `/api` tiếp tục hoạt động qua proxy Nginx trong Docker Compose. Khi triển khai frontend và backend thành hai dịch vụ Render riêng, đặt `VITE_API_URL=https://ticket-backend-i40i.onrender.com/api` trong Environment của dịch vụ frontend rồi rebuild/deploy frontend. Backend hiện cho phép CORS từ frontend.
 
 `TokenService.java` quản lý JWT, không phải kết nối MySQL. Cấu hình database nằm trong `application.properties` và được cấp qua các biến môi trường trên.
 

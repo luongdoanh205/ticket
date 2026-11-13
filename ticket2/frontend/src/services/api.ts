@@ -16,8 +16,10 @@ import type {
   AdminTicket,
 } from '../types';
 
+const apiBaseUrl = import.meta.env.VITE_API_URL?.trim().replace(/\/+$/, '') || '/api';
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: apiBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },
