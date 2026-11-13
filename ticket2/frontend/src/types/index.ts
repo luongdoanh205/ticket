@@ -1,4 +1,4 @@
-export type Role = 'CUSTOMER' | 'ADMIN';
+export type Role = 'CUSTOMER' | 'STAFF' | 'MANAGER' | 'ADMIN';
 export type AccountStatus = 'ACTIVE' | 'LOCKED';
 export type MovieStatus = 'COMING_SOON' | 'NOW_SHOWING' | 'ENDED';
 export type ShowtimeStatus = 'AVAILABLE' | 'FULL' | 'CANCELLED';
@@ -156,4 +156,76 @@ export interface AdminDashboardData {
   revenue: number;
   from: string;
   to: string;
+}
+
+export interface AdminBookingSeat {
+  seatId: number;
+  label: string;
+  rowLabel: string;
+  seatNumber: number;
+  seatType: string;
+  unitPrice: number;
+  holdStatus: string;
+}
+
+export interface AdminBooking {
+  id: number;
+  userId?: number | null;
+  customerName: string;
+  email?: string | null;
+  phone?: string | null;
+  saleChannel?: 'ONLINE' | 'COUNTER';
+  soldByName?: string | null;
+  showtimeId: number;
+  movieTitle: string;
+  cinemaName: string;
+  roomName: string;
+  startAt: string;
+  endAt: string;
+  status: BookingStatus;
+  totalAmount: number;
+  holdExpiresAt: string;
+  createdAt: string;
+  seats: AdminBookingSeat[];
+}
+
+export interface AdminPayment {
+  id: number;
+  bookingId: number;
+  customerName: string;
+  email?: string | null;
+  saleChannel?: 'ONLINE' | 'COUNTER';
+  soldByName?: string | null;
+  movieTitle: string;
+  cinemaName: string;
+  roomName: string;
+  startAt: string;
+  seats: AdminBookingSeat[];
+  bookingStatus: BookingStatus;
+  amount: number;
+  method: string;
+  status: PaymentStatus;
+  transactionRef: string;
+  paidAt: string;
+}
+
+export interface AdminTicket {
+  id: number;
+  ticketCode: string;
+  status: TicketStatus;
+  bookingId: number;
+  seatId: number;
+  seatLabel: string;
+  showtimeId: number;
+  customerName: string;
+  email?: string | null;
+  saleChannel?: 'ONLINE' | 'COUNTER';
+  soldByName?: string | null;
+  movieTitle: string;
+  cinemaName: string;
+  roomName: string;
+  startAt: string;
+  price: number;
+  issuedAt: string;
+  usedAt?: string | null;
 }

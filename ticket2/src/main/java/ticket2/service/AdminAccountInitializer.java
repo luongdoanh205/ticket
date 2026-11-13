@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import java.util.Locale;
@@ -16,16 +17,18 @@ import java.util.Locale;
 class AdminAccountInitializer implements CommandLineRunner {
     private static final Logger log = LoggerFactory.getLogger(AdminAccountInitializer.class);
     private final UserRepository users;
+    private final JdbcTemplate jdbc;
     private final PasswordEncoder passwords;
     private final String email;
     private final String password;
     private final String fullName;
 
-    AdminAccountInitializer(UserRepository users, PasswordEncoder passwords,
+    AdminAccountInitializer(UserRepository users, JdbcTemplate jdbc, PasswordEncoder passwords,
                             @Value("${ADMIN_EMAIL:}") String email,
                             @Value("${ADMIN_PASSWORD:}") String password,
                             @Value("${ADMIN_FULL_NAME:System Administrator}") String fullName) {
         this.users=users;
+        this.jdbc=jdbc;
         this.passwords=passwords;
         this.email=email;
         this.password=password;
@@ -34,6 +37,9 @@ class AdminAccountInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+        // Older MySQL schemas may have created this column as ENUM('CUSTOMER','ADMIN').
+        // Widen it so MANAGER and STAFF from Role can be saved too.
+        jdbc.execute("ALTER TABLE users MODIFY COLUMN role VARCHAR(16) NOT NULL");
         if(email.isBlank() || password.isBlank() || password.startsWith("CHANGE_ME")) {
             log.warn("Admin bootstrap skipped: set ADMIN_EMAIL and a real ADMIN_PASSWORD in .env");
             return;

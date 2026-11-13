@@ -11,6 +11,9 @@ interface AuthContextType {
   logout: () => void;
   updateUser: (updated: Partial<User>) => void;
   isAdmin: boolean;
+  isManager: boolean;
+  isStaff: boolean;
+  canAccessAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -71,6 +74,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const isAdmin = user?.role === 'ADMIN';
+  const isManager = user?.role === 'MANAGER';
+  const isStaff = user?.role === 'STAFF';
+  const canAccessAdmin = isAdmin || isManager || isStaff;
 
   return (
     <AuthContext.Provider
@@ -83,6 +89,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         logout,
         updateUser,
         isAdmin,
+        isManager,
+        isStaff,
+        canAccessAdmin,
       }}
     >
       {children}

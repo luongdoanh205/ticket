@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Film, User, LogOut, Ticket, ShieldCheck, Clock, Menu, X } from 'lucide-react';
+import { Film, User, LogOut, Ticket, ShieldCheck, Clock, Menu, X, ShoppingBag } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export const Navbar: React.FC = () => {
-  const { user, logout, isAdmin } = useAuth();
+  const { user, logout, isManager, isStaff, canAccessAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -17,6 +17,9 @@ export const Navbar: React.FC = () => {
     navigate('/');
     setDropdownOpen(false);
   };
+
+  const adminButtonLabel = isStaff ? 'Bán vé tại quầy' : isManager ? 'Quản lý' : 'Quản trị';
+  const AdminIcon = isStaff ? ShoppingBag : ShieldCheck;
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 text-slate-800 shadow-xs">
@@ -82,13 +85,13 @@ export const Navbar: React.FC = () => {
               </>
             )}
 
-            {isAdmin && (
+            {canAccessAdmin && (
               <Link
-                to="/admin"
+                to={isStaff ? "/admin/counter" : "/admin"}
                 className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-amber-800 bg-amber-50 border border-amber-200 hover:bg-amber-100 transition-all"
               >
-                <ShieldCheck className="w-4 h-4 text-amber-600" />
-                Quản trị Admin
+                <AdminIcon className="w-4 h-4 text-amber-600" />
+                {adminButtonLabel}
               </Link>
             )}
           </div>
@@ -135,14 +138,14 @@ export const Navbar: React.FC = () => {
                       <Ticket className="w-4 h-4 text-slate-400" />
                       Vé xem phim
                     </Link>
-                    {isAdmin && (
+                    {canAccessAdmin && (
                       <Link
-                        to="/admin"
+                        to={isStaff ? "/admin/counter" : "/admin"}
                         onClick={() => setDropdownOpen(false)}
                         className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-amber-700 hover:bg-amber-50"
                       >
-                        <ShieldCheck className="w-4 h-4 text-amber-600" />
-                        Trang quản trị
+                        <AdminIcon className="w-4 h-4 text-amber-600" />
+                        {isStaff ? 'Bán vé tại quầy' : 'Trang quản trị'}
                       </Link>
                     )}
 
@@ -236,13 +239,13 @@ export const Navbar: React.FC = () => {
               </Link>
             </>
           )}
-          {isAdmin && (
+          {canAccessAdmin && (
             <Link
-              to="/admin"
+              to={isStaff ? "/admin/counter" : "/admin"}
               onClick={() => setMobileMenuOpen(false)}
               className="block px-3 py-2 rounded-xl text-base font-bold text-amber-800 bg-amber-50"
             >
-              Quản trị Admin
+              {isStaff ? 'Bán vé tại quầy' : 'Quản trị hệ thống'}
             </Link>
           )}
 

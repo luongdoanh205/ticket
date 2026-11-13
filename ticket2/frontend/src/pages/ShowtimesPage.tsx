@@ -4,10 +4,11 @@ import { showtimeApi, cinemaApi } from '../services/api';
 import type { Showtime, Cinema } from '../types';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Calendar, MapPin, Clock } from 'lucide-react';
+import { toLocalDateString } from '../utils/date';
 
 export const ShowtimesPage: React.FC = () => {
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => toLocalDateString(new Date()));
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);
   const [selectedCinemaId, setSelectedCinemaId] = useState<number | 'ALL'>('ALL');
@@ -17,7 +18,7 @@ export const ShowtimesPage: React.FC = () => {
   const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = toLocalDateString(d);
     const dayName = i === 0 ? 'Hôm nay' : i === 1 ? 'Ngày mai' : `Th ${d.getDay() + 1 === 1 ? 'CN' : d.getDay() + 1}`;
     const dayMonth = `${d.getDate()}/${d.getMonth() + 1}`;
     return { dateStr, dayName, dayMonth };

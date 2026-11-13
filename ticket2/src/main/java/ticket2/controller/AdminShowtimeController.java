@@ -9,6 +9,7 @@ import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDateTime;
+import java.util.Map;
 import java.util.Objects;
 
 @RestController @io.swagger.v3.oas.annotations.security.SecurityRequirement(name="bearerAuth") @RequestMapping("/api/admin/showtimes")
@@ -22,11 +23,11 @@ class AdminShowtimeController {
                             BookingRepository bookings,BookingSeatRepository bookingSeats) {
         this.shows=shows; this.movies=movies; this.rooms=rooms; this.bookings=bookings; this.bookingSeats=bookingSeats;
     }
-    @PostMapping @Transactional ResponseEntity<Showtime> create(@Valid @RequestBody ShowtimeInput input) {
-        Showtime show=new Showtime(); copy(input,show); return ResponseEntity.status(HttpStatus.CREATED).body(shows.save(show));
+    @PostMapping @Transactional ResponseEntity<Map<String,Object>> create(@Valid @RequestBody ShowtimeInput input) {
+        Showtime show=new Showtime(); copy(input,show); return ResponseEntity.status(HttpStatus.CREATED).body(view(shows.save(show)));
     }
-    @PutMapping("/{id}") @Transactional Showtime update(@PathVariable Long id,@Valid @RequestBody ShowtimeInput input) {
-        Showtime show=shows.findById(id).orElseThrow(() -> missing("SHOWTIME_NOT_FOUND")); copy(input,show); return shows.save(show);
+    @PutMapping("/{id}") @Transactional Map<String,Object> update(@PathVariable Long id,@Valid @RequestBody ShowtimeInput input) {
+        Showtime show=shows.findById(id).orElseThrow(() -> missing("SHOWTIME_NOT_FOUND")); copy(input,show); return view(shows.save(show));
     }
     @DeleteMapping("/{id}") @Transactional ResponseEntity<Void> cancel(@PathVariable Long id) {
         Showtime show=shows.findById(id).orElseThrow(() -> missing("SHOWTIME_NOT_FOUND"));
@@ -54,6 +55,16 @@ class AdminShowtimeController {
         show.movie=movies.findById(input.movieId()).orElseThrow(() -> missing("MOVIE_NOT_FOUND"));
         show.room=room; show.startAt=input.startAt(); show.endAt=input.endAt(); show.basePrice=input.basePrice();
         if(input.status()!=null) show.status=input.status();
+    }
+    private Map<String,Object> view(Showtime show) {
+        return Map.of(
+                "id",show.id,
+                "movie",Map.of("id",show.movie.id,"title",show.movie.title),
+                "cinema",Map.of("id",show.room.cinema.id,"name",show.room.cinema.name),
+                "room",Map.of("id",show.room.id,"name",show.room.name),
+                "startAt",show.startAt,"endAt",show.endAt,
+                "basePrice",show.basePrice,"status",show.status
+        );
     }
     private ResponseStatusException missing(String code) { return new ResponseStatusException(HttpStatus.NOT_FOUND,code); }
 }

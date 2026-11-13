@@ -11,6 +11,9 @@ import type {
   Booking,
   Ticket,
   AdminDashboardData,
+  AdminBooking,
+  AdminPayment,
+  AdminTicket,
 } from '../types';
 
 const api = axios.create({
@@ -140,6 +143,26 @@ export const bookingApi = {
 };
 
 export const adminApi = {
+  createCounterSale: async (data: {
+    showtimeId: number;
+    seatIds: number[];
+    customerName: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    paymentMethod: 'CASH' | 'CARD';
+  }): Promise<{
+    bookingId: number;
+    bookingStatus: string;
+    customerName: string;
+    showtime: string;
+    totalAmount: number;
+    paymentMethod: string;
+    soldBy: string;
+    tickets: { ticketId: number; ticketCode: string; seatLabel: string; price: number }[];
+  }> => {
+    const res = await api.post('/admin/counter-sales', data);
+    return res.data;
+  },
   getUsers: async (): Promise<User[]> => {
     const res = await api.get<User[]>('/admin/users');
     return res.data;
@@ -222,20 +245,20 @@ export const adminApi = {
   deleteShowtime: async (id: number): Promise<void> => {
     await api.delete(`/admin/showtimes/${id}`);
   },
-  getAdminBookings: async (): Promise<any[]> => {
-    const res = await api.get('/admin/bookings');
+  getAdminBookings: async (): Promise<AdminBooking[]> => {
+    const res = await api.get<AdminBooking[]>('/admin/bookings');
     return res.data;
   },
-  getAdminPayments: async (): Promise<any[]> => {
-    const res = await api.get('/admin/payments');
+  getAdminPayments: async (): Promise<AdminPayment[]> => {
+    const res = await api.get<AdminPayment[]>('/admin/payments');
     return res.data;
   },
-  getAdminTickets: async (): Promise<any[]> => {
-    const res = await api.get('/admin/tickets');
+  getAdminTickets: async (): Promise<AdminTicket[]> => {
+    const res = await api.get<AdminTicket[]>('/admin/tickets');
     return res.data;
   },
-  validateTicket: async (code: string): Promise<{ valid: boolean; status: string; showtimeId: number; seatId: number }> => {
-    const res = await api.get(`/admin/tickets/${encodeURIComponent(code)}/validate`);
+  validateTicket: async (code: string): Promise<AdminTicket & { valid: boolean }> => {
+    const res = await api.get<AdminTicket & { valid: boolean }>(`/admin/tickets/${encodeURIComponent(code)}/validate`);
     return res.data;
   },
   useTicket: async (code: string): Promise<{ ticketCode: string; status: string }> => {

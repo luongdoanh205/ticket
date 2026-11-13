@@ -23,6 +23,8 @@ import { AdminShowtimesPage } from './pages/admin/AdminShowtimesPage';
 import { AdminCheckinPage } from './pages/admin/AdminCheckinPage';
 import { AdminUsersPage } from './pages/admin/AdminUsersPage';
 import { AdminCinemasPage } from './pages/admin/AdminCinemasPage';
+import { AdminSalesPage } from './pages/admin/AdminSalesPage';
+import { AdminCounterSalePage } from './pages/admin/AdminCounterSalePage';
 
 export const App: React.FC = () => {
   return (
@@ -48,7 +50,9 @@ export const App: React.FC = () => {
               <Route index element={<AdminDashboardPage />} />
               <Route path="movies" element={<AdminMoviesPage />} />
               <Route path="showtimes" element={<AdminShowtimesPage />} />
+              <Route path="sales" element={<AdminSalesPage />} />
               <Route path="checkin" element={<AdminCheckinPage />} />
+              <Route path="counter" element={<AdminCounterSalePage />} />
               <Route path="users" element={<AdminUsersPage />} />
               <Route path="cinemas" element={<AdminCinemasPage />} />
             </Route>

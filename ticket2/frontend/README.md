@@ -59,6 +59,7 @@ Giao diện người dùng hiện đại, tốc độ cao được xây dựng �
 - **Soát vé tại rạp (`/admin/checkin`):**
   - Tra cứu và kiểm tra tính hợp lệ của vé theo mã vé/QR (`/admin/tickets/{code}/validate`).
   - Xác nhận check-in cho khách vào rạp (`/admin/tickets/{code}/use`).
+- **Bán vé tại quầy (`/admin/counter`):** STAFF, MANAGER và ADMIN chọn suất/ghế, nhập tên và thông tin liên hệ khách, ghi nhận tiền mặt hoặc thẻ đã thu, sau đó phát hành mã QR cho từng ghế. Báo cáo giao dịch lưu cả kênh bán và nhân viên phụ trách.
 - **Quản lý người dùng (`/admin/users`):**
   - Danh sách tài khoản, chuyển đổi vai trò (`CUSTOMER` <-> `ADMIN`), Khóa/Mở khóa tài khoản (`ACTIVE` / `LOCKED`).
 - **Cụm rạp & Phòng chiếu (`/admin/cinemas`):**

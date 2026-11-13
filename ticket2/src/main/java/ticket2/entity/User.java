@@ -9,5 +9,5 @@ public class User extends BaseEntity {
     @Column(nullable=false) public String passwordHash;
     public String phone;
     @Enumerated(EnumType.STRING) @Column(nullable=false) public AccountStatus status=AccountStatus.ACTIVE;
-    @Enumerated(EnumType.STRING) @Column(nullable=false) public Role role=Role.CUSTOMER;
+    @Enumerated(EnumType.STRING) @Column(nullable=false, length=16) public Role role=Role.CUSTOMER;
 }

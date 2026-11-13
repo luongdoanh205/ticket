@@ -9,6 +9,10 @@ export const AdminCheckinPage: React.FC = () => {
   const [isUsing, setIsUsing] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [recentTickets, setRecentTickets] = useState<any[]>([]);
+  const formatDate = (value?: string) => value ? new Date(value).toLocaleString('vi-VN') : '—';
+  const formatPrice = (value?: number) => typeof value === 'number'
+    ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 }).format(value)
+    : '—';
 
   useEffect(() => {
     const fetchRecent = async () => {
@@ -138,6 +142,21 @@ export const AdminCheckinPage: React.FC = () => {
             )}
           </div>
         )}
+
+        {ticketInfo && (
+          <div className="grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <p className="text-[11px] font-extrabold uppercase tracking-wider text-slate-400">Thông tin vé và khách hàng</p>
+              <p className="mt-1 font-mono text-base font-black text-slate-900">{ticketInfo.ticketCode}</p>
+            </div>
+            <div><p className="text-xs font-bold text-slate-400">Khách hàng</p><p className="mt-1 font-bold text-slate-800">{ticketInfo.customerName || '—'}</p><p className="text-xs text-slate-500">{ticketInfo.email || ''}</p></div>
+            <div><p className="text-xs font-bold text-slate-400">Đơn đặt vé</p><p className="mt-1 font-bold text-slate-800">#{ticketInfo.bookingId ?? '—'} · {ticketInfo.seatLabel || '—'}</p><p className="text-xs text-slate-500">Giá vé: {formatPrice(ticketInfo.price)}</p></div>
+            <div><p className="text-xs font-bold text-slate-400">Phim</p><p className="mt-1 font-bold text-slate-800">{ticketInfo.movieTitle || '—'}</p></div>
+            <div><p className="text-xs font-bold text-slate-400">Rạp / phòng</p><p className="mt-1 font-bold text-slate-800">{ticketInfo.cinemaName || '—'} · {ticketInfo.roomName || '—'}</p></div>
+            <div><p className="text-xs font-bold text-slate-400">Suất chiếu</p><p className="mt-1 font-bold text-slate-800">{formatDate(ticketInfo.startAt)}</p></div>
+            <div><p className="text-xs font-bold text-slate-400">Phát hành / sử dụng</p><p className="mt-1 text-sm font-semibold text-slate-700">{formatDate(ticketInfo.issuedAt)} / {formatDate(ticketInfo.usedAt)}</p></div>
+          </div>
+        )}
       </div>
 
       {/* Recent tickets list */}
@@ -151,8 +170,9 @@ export const AdminCheckinPage: React.FC = () => {
             <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 font-bold uppercase">
               <tr>
                 <th className="py-2.5 px-3">Mã vé</th>
-                <th className="py-2.5 px-3">Mã đơn</th>
-                <th className="py-2.5 px-3">Suất chiếu ID</th>
+                <th className="py-2.5 px-3">Khách hàng</th>
+                <th className="py-2.5 px-3">Phim / Ghế</th>
+                <th className="py-2.5 px-3">Suất chiếu</th>
                 <th className="py-2.5 px-3">Trạng thái</th>
                 <th className="py-2.5 px-3 text-right">Hành động</th>
               </tr>
@@ -161,8 +181,9 @@ export const AdminCheckinPage: React.FC = () => {
               {recentTickets.map((t) => (
                 <tr key={t.id} className="hover:bg-slate-50 transition-colors">
                   <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{t.ticketCode}</td>
-                  <td className="py-2.5 px-3 font-semibold text-slate-600">#{t.bookingId}</td>
-                  <td className="py-2.5 px-3 font-semibold text-slate-600">#{t.showtimeId}</td>
+                  <td className="py-2.5 px-3"><p className="font-bold text-slate-800">{t.customerName || '—'}</p><p className="text-[11px] text-slate-400">Đơn #{t.bookingId}</p></td>
+                  <td className="py-2.5 px-3"><p className="max-w-48 truncate font-semibold text-slate-800">{t.movieTitle || '—'}</p><p className="text-[11px] text-slate-500">Ghế {t.seatLabel || '—'}</p></td>
+                  <td className="py-2.5 px-3 font-semibold text-slate-600">{formatDate(t.startAt)}</td>
                   <td className="py-2.5 px-3">
                     <span
                       className={`px-2 py-0.5 rounded-full font-bold ${

@@ -5,6 +5,7 @@ import type { Seat, Showtime, Booking } from '../types';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { useAuth } from '../context/AuthContext';
 import { ChevronLeft, AlertCircle } from 'lucide-react';
+import { toLocalDateString } from '../utils/date';
 
 export const BookingSeatPage: React.FC = () => {
   const { showtimeId: paramShowtimeId } = useParams<{ showtimeId: string }>();
@@ -26,7 +27,7 @@ export const BookingSeatPage: React.FC = () => {
         setIsLoading(true);
         setErrorMessage(null);
 
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = toLocalDateString(new Date());
         let foundShowtime: Showtime | null = null;
 
         const todayShowtimes = await showtimeApi.getShowtimes(todayStr);
@@ -36,7 +37,7 @@ export const BookingSeatPage: React.FC = () => {
           for (let i = 1; i <= 7; i++) {
             const nextD = new Date();
             nextD.setDate(nextD.getDate() + i);
-            const dateStr = nextD.toISOString().split('T')[0];
+            const dateStr = toLocalDateString(nextD);
             const futureShowtimes = await showtimeApi.getShowtimes(dateStr);
             const match = futureShowtimes.find((s) => s.id === showtimeId);
             if (match) {

@@ -3,9 +3,10 @@ import { showtimeApi, adminApi, movieApi, cinemaApi } from '../../services/api';
 import type { Showtime, Movie, Cinema, Room } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Calendar, Plus, Trash2, X, Clock } from 'lucide-react';
+import { toLocalDateString } from '../../utils/date';
 
 export const AdminShowtimesPage: React.FC = () => {
-  const [selectedDate, setSelectedDate] = useState<string>(() => new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => toLocalDateString(new Date()));
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
   const [movies, setMovies] = useState<Movie[]>([]);
   const [cinemas, setCinemas] = useState<Cinema[]>([]);

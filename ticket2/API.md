@@ -8,7 +8,7 @@ Tài liệu này được tổng hợp từ controller và DTO hiện có trong 
 - FE chạy Vite có thể proxy `/api` đến `http://localhost:8080` (đã cấu hình trong `frontend/vite.config.ts`).
 - Với endpoint cần đăng nhập gửi header `Authorization: Bearer <accessToken>`.
 - Token JWT hết hạn sau 1 giờ. Đăng nhập lại khi API trả `401`.
-- Đăng nhập và catalog công khai. `/api/admin/**` yêu cầu role `ADMIN`; `/api/me/**`, `/api/bookings/**`, `/api/tickets/**` yêu cầu `CUSTOMER` hoặc `ADMIN`.
+- Đăng nhập và catalog công khai. `/api/admin/**` yêu cầu role quản trị phù hợp; bán vé quầy và soát vé cho phép `STAFF`, các thao tác quản trị khác giới hạn `MANAGER`/`ADMIN` hoặc `ADMIN`; `/api/me/**`, `/api/bookings/**`, `/api/tickets/**` yêu cầu tài khoản đã đăng nhập.
 - User bị khóa (`LOCKED`) không thể đăng nhập; token của user không còn `ACTIVE` cũng không xác thực request.
 - Lỗi nghiệp vụ thường có dạng `{ "code": "...", "message": "...", "timestamp": "..." }`. Lỗi xác thực/phân quyền do Spring Security có thể khác định dạng.
 - Enum được gửi/nhận dưới dạng chuỗi viết hoa.
@@ -180,10 +180,12 @@ Danh sách vé của user hiện tại. Mỗi vé: `{ id, ticketCode, status, is
 
 ### Bán vé, thanh toán, quét vé
 
-- `GET /admin/bookings`: `{ id, userId, email, showtimeId, status, totalAmount, holdExpiresAt, createdAt }[]`.
-- `GET /admin/payments`: `{ id, bookingId, amount, method, status, transactionRef, paidAt }[]`.
-- `GET /admin/tickets`: `{ id, ticketCode, status, bookingId, seatId, showtimeId, issuedAt }[]`.
-- `GET /admin/tickets/{code}/validate`: `{ "valid": true, "status": "VALID", "showtimeId": 5, "seatId": 21 }`. Vé không có: `404 TICKET_NOT_FOUND`. `valid` chỉ true khi vé `VALID` và booking `PAID`.
+- `GET /admin/bookings`: danh sách mới nhất trước; gồm ID, userId, họ tên/email/điện thoại khách, phim, rạp, phòng, giờ chiếu, trạng thái, tổng tiền, hạn giữ ghế, thời điểm tạo và từng ghế `{ seatId, label, rowLabel, seatNumber, seatType, unitPrice, holdStatus }`.
+- `GET /admin/payments`: gồm ID giao dịch, mã đơn, tên/email khách, phim, rạp, phòng, giờ chiếu, ghế, trạng thái đơn, số tiền, phương thức, trạng thái giao dịch, mã tham chiếu và thời điểm thanh toán.
+- `GET /admin/tickets`: gồm mã vé, trạng thái, đơn, ghế, khách/email, phim, rạp, phòng, giờ chiếu, giá, thời điểm phát hành/sử dụng.
+- `POST /admin/counter-sales` (ADMIN, MANAGER, STAFF): bán vé trực tiếp tại quầy. Body `{ "showtimeId": 1, "seatIds": [21], "customerName": "Nguyễn Văn A", "customerPhone": "090...", "customerEmail": "a@example.com", "paymentMethod": "CASH" }`; email và điện thoại có thể bỏ trống, tối đa 8 ghế. Nhân viên xác nhận đã thu tiền bằng `CASH` hoặc `CARD`; API tạo đơn `PAID`, payment `SUCCESS`, khóa ghế, phát vé và trả mã QR/ticket code cùng nhân viên bán. Đây là thao tác ghi nhận tiền đã thu tại quầy, không xử lý thẻ qua cổng ngân hàng.
+  Cơ sở dữ liệu hiện có cần áp dụng `database/migrations/20261113_counter_sales.sql` một lần để cho phép booking khách vãng lai không có `user_id`.
+- `GET /admin/tickets/{code}/validate`: trả thông tin vé và khách kèm `valid`, trạng thái, suất và ghế. Vé không có: `404 TICKET_NOT_FOUND`. `valid` chỉ true khi vé `VALID` và booking `PAID`.
 - `POST /admin/tickets/{code}/use`: đánh dấu vé đã sử dụng; thành công `{ "ticketCode": "...", "status": "USED" }`. Vé không hợp lệ hoặc suất đã kết thúc: `409 TICKET_NOT_VALID`.
 
 ### Dashboard

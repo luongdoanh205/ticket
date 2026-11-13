@@ -4,6 +4,7 @@ import { movieApi, showtimeApi } from '../services/api';
 import type { Movie, Showtime } from '../types';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 import { Clock, Calendar, Film, User, ChevronLeft, MapPin } from 'lucide-react';
+import { toLocalDateString } from '../utils/date';
 
 export const MovieDetailsPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,10 +13,7 @@ export const MovieDetailsPage: React.FC = () => {
 
   const [movie, setMovie] = useState<Movie | null>(null);
   const [showtimes, setShowtimes] = useState<Showtime[]>([]);
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split('T')[0];
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(() => toLocalDateString(new Date()));
   const [isLoading, setIsLoading] = useState(true);
   const [loadingShowtimes, setLoadingShowtimes] = useState(false);
 
@@ -23,7 +21,7 @@ export const MovieDetailsPage: React.FC = () => {
   const dateOptions = Array.from({ length: 7 }, (_, i) => {
     const d = new Date();
     d.setDate(d.getDate() + i);
-    const dateStr = d.toISOString().split('T')[0];
+    const dateStr = toLocalDateString(d);
     const dayName = i === 0 ? 'Hôm nay' : i === 1 ? 'Ngày mai' : `Th ${d.getDay() + 1 === 1 ? 'CN' : d.getDay() + 1}`;
     const dayMonth = `${d.getDate()}/${d.getMonth() + 1}`;
     return { dateStr, dayName, dayMonth };

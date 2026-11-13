@@ -8,11 +8,13 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.*;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
+@Transactional(readOnly = true)
 class CatalogController {
     private final MovieRepository movies;
     private final CinemaRepository cinemas;
@@ -50,7 +52,7 @@ class CatalogController {
 
     @GetMapping("/movies/{id}")
     Movie movie(@PathVariable Long id) {
-        return movies.findById(id).orElseThrow(() -> missing("MOVIE_NOT_FOUND"));
+        return movies.findWithGenresById(id).orElseThrow(() -> missing("MOVIE_NOT_FOUND"));
     }
 
     @GetMapping("/genres") List<Genre> genres() { return genres.findAll(); }

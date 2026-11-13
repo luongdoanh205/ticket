@@ -3,6 +3,7 @@ import { movieApi, adminApi } from '../../services/api';
 import type { Movie, Genre } from '../../types';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { Film, Plus, Edit2, Trash2, X } from 'lucide-react';
+import { toLocalDateString } from '../../utils/date';
 
 export const AdminMoviesPage: React.FC = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
@@ -50,7 +51,7 @@ export const AdminMoviesPage: React.FC = () => {
     setTitle('');
     setDescription('');
     setDuration(120);
-    setReleaseDate(new Date().toISOString().split('T')[0]);
+    setReleaseDate(toLocalDateString(new Date()));
     setPosterUrl('');
     setDirector('');
     setCastNames('');
